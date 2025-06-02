@@ -9,6 +9,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-.}:/opt/airflow # Project dir 
+
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -77,12 +79,10 @@ services:
   
   airflow-init:
     <<: *airflow-common
-    volumes:
-      - ./scripts/airflow-init.sh:/airflow-init.sh:ro
     environment:
       <<: *airflow-common-env
     user: "0:0"
-    entrypoint: ["/bin/bash", "/airflow-init.sh"]
+    entrypoint: ["/bin/bash", "/opt/airflow/scripts/airflow-init.sh"]
 
   airflow-cli:
     <<: *airflow-common
