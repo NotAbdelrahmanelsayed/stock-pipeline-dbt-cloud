@@ -1,12 +1,9 @@
-import sys 
-from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parents[1]))
-
-from utils.constants import TICKERS, logger
+from utils.constants import logger
 import yfinance as yf
-from datetime import timedelta
 import pandas as pd 
 from typing import List, Optional
+
+
 
 def flatten_multi_index(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -45,7 +42,6 @@ def download_stock_data(
     Returns
     -------
     pd.DataFrame
-        _description_
     """
     try:
         if is_full_load:
@@ -57,7 +53,7 @@ def download_stock_data(
             logger.info(f"Downloading data for {tickers} from {start_date} to {end_date}")
             df = yf.download(tickers=tickers, start=start_date, end=end_date, group_by='ticker')
         
-        return flatten_multi_index(df) 
+        return df
     except Exception as e:
         logger.error(f"Failed to download stock data {e}")
         raise
