@@ -6,6 +6,7 @@ from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
 from datetime import datetime
 from pipelines.yfinance_pipeline import initial_download_stock_data
+from pipelines.gcs_pipeline import upload_to_gcs
 
 default_args = {
     "owner": "Abdelrahman",
@@ -25,4 +26,10 @@ extract = PythonOperator(
     dag=dag
     )
 
-extract
+load_gsc = PythonOperator(
+    task_id="Upload_raw_data_to_GSC",
+    python_callable=upload_to_gcs,
+    dag=dag
+)
+
+extract >> load_gsc
