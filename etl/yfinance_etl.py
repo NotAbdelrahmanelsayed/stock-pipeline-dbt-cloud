@@ -58,3 +58,6 @@ def download_stock_data(
         logger.error(f"Failed to download stock data {e}")
         raise
 
+def save_data_locally(df: pd.DataFrame, save_path) -> None:
+    """Saves the DataFrame as csv into the defined path"""
+    df.to_csv(save_path, index=False)
