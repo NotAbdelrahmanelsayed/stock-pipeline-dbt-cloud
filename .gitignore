@@ -192,3 +192,17 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# My private notes through out devoloping
+todo-list.md
+sources.txt
+
+# cloud credentials
+stock-pipeline-dbt-cloud.json
+
+# Configuration file
+config/configuration.conf
+
+# logs
+logs/d*
+test_bigquery.py
