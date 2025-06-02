@@ -19,7 +19,7 @@ x-airflow-common:
 
 services:
   postgres:
-    image: postgres:13
+    image: postgres:15
     env_file: postgres.env
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
@@ -61,6 +61,13 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+ 
+  airflow-init:
+    <<: *airflow-common
+    environment:
+      <<: *airflow-common-env
+    user: "0:0"
+    entrypoint: ["/bin/bash", "/opt/airflow/scripts/airflow-init.sh"]
 
   airflow-dag-processor:
     <<: *airflow-common
@@ -76,28 +83,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-  
-  airflow-init:
-    <<: *airflow-common
-    environment:
-      <<: *airflow-common-env
-    user: "0:0"
-    entrypoint: ["/bin/bash", "/opt/airflow/scripts/airflow-init.sh"]
-
-  airflow-cli:
-    <<: *airflow-common
-    profiles:
-      - debug
-    environment:
-      <<: *airflow-common-env
-      CONNECTION_CHECK_MAX_COUNT: "0"
-    command:
-      - bash
-      - -c
-      - airflow
-    depends_on:
-      <<: *airflow-common-depends-on
-
-
+        
 volumes:
   postgres-db-volume:
