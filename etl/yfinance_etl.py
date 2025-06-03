@@ -8,21 +8,33 @@ from typing import List, Optional
 def transform(df: pd.DataFrame) -> pd.DataFrame:
     """
     Flattens a MultiIndex DataFrame from yfinance into long-form format,
-    drop duplicates, drop null rows.
+    drops duplicates, nulls, and malformed rows.
 
     Returns
     -------
     pd.DataFrame
-        Flattened DataFrame with columns including 'Ticker' and other metrics.
     """
     if isinstance(df.columns, pd.MultiIndex):
         df = df.stack(level=0).reset_index()
         df = df.rename(columns={'level_1': 'Ticker'})
-    
+
     df = df.drop_duplicates()
     df = df.dropna(axis=0)
 
+    # Filter out any rows that don't contain expected columns
+    expected_cols = {'Date', 'Ticker', 'Open', 'High', 'Low', 'Close', 'Volume'}
+    missing_cols = expected_cols - set(df.columns)
+    if missing_cols:
+        logger.warning(f"Missing expected columns: {missing_cols}. Output may be malformed.")
+    
+    # Remove rows missing key columns (if they exist)
+    df = df[df.columns.intersection(expected_cols)]
+
+    # Final cleanup: ensure no partial rows survive
+    df = df.dropna(subset=expected_cols.intersection(df.columns))
+
     return df
+
 
     
 def download_stock_data(
