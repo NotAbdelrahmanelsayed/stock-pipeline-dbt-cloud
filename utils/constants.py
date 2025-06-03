@@ -1,7 +1,28 @@
 from utils.logging_config import setup_logging
+from pathlib import Path
+import configparser
 
 # Prepare the logger
 logger = setup_logging()
 
+# Getting the config parser
+config = configparser.ConfigParser()
+conf_path = Path(__file__).resolve().parents[1] / "config/configuration.conf"
+
+# if not conf_path.exists
+config.read(conf_path)
+
+# Google Credentials
+SERVICE_ACC_FILE = config.get("google_cloud", "SERVICE_ACCESS_FILE_PATH")
+BUCKET_NAME = config.get("google_cloud", "BUCKET_NAME")
+
 # Tickers labels
-TICKERS = ['MSFT', 'AAPL', 'NVDA', 'AMZN', 'GOOGL', '2222.SR', 'META', 'BRK-B', 'AVGO', 'TSM']
+TICKERS = config.get('y_finance','STOCK_TICKERS').split(', ')
+
+
+# Data Dir handeling
+RAW_DATA_PATH = Path(config.get("data_pathes", "RAW_DIR_PATH")).resolve() # Full path
+RAW_DATA_FILE_NAME = config.get("data_pathes", "RAW_CSV_FILE")
+RAW_DATA_FILE_PATH = RAW_DATA_PATH / RAW_DATA_FILE_NAME
+
+GSC_RAW_DATA_PATH = config.get("data_pathes", "GSC_RAW_PATH")
