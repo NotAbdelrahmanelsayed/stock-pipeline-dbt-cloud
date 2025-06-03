@@ -77,3 +77,5 @@ volumes:
 clean:
 	docker system prune -fa --volumes
 
+caches:
+	py3clean .
