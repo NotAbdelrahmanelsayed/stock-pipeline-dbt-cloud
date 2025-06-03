@@ -5,9 +5,10 @@ from typing import List, Optional
 
 
 
-def flatten_multi_index(df: pd.DataFrame) -> pd.DataFrame:
+def transform(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Flattens a MultiIndex DataFrame from yfinance into long-form format.
+    Flattens a MultiIndex DataFrame from yfinance into long-form format,
+    drop duplicates, drop null rows.
 
     Returns
     -------
@@ -17,6 +18,10 @@ def flatten_multi_index(df: pd.DataFrame) -> pd.DataFrame:
     if isinstance(df.columns, pd.MultiIndex):
         df = df.stack(level=0).reset_index()
         df = df.rename(columns={'level_1': 'Ticker'})
+    
+    df = df.drop_duplicates()
+    df = df.dropna(axis=0)
+
     return df
 
     
