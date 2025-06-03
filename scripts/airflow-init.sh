@@ -73,4 +73,4 @@ if [[ -z "${AIRFLOW_UID}" ]]; then
         echo
         ls -la /opt/airflow/{logs,dags,plugins,config}
         echo "Installing stock-pipeline package as airflow user..."
-        sudo -E -u airflow pip install -e /opt/airflow
+        pip install -e /opt/airflow
