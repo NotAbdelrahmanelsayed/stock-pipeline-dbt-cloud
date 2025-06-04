@@ -6,7 +6,7 @@ from airflow import DAG
 from airflow.providers.standard.operators.python import PythonOperator
 from datetime import datetime
 from pipelines.yfinance_pipeline import initial_download_stock_data
-from pipelines.gcs_pipeline import google_cloud_pipeline
+from pipelines.gcs_pipeline import upload_to_bigquery, upload_to_gcs
 
 default_args = {
     "owner": "Abdelrahman",
@@ -20,6 +20,7 @@ dag = DAG(
     catchup=False,
 )
 
+# Extract Data from yfinance and save it locally
 extract = PythonOperator(
     task_id="Initial_extraction",
     python_callable=initial_download_stock_data,
@@ -28,8 +29,13 @@ extract = PythonOperator(
 
 load_gsc = PythonOperator(
     task_id="Upload_raw_data_to_GSC",
-    python_callable=google_cloud_pipeline,
+    python_callable=upload_to_gcs,
     dag=dag
 )
 
-extract >> load_gsc
+load_bigquery = PythonOperator(
+    task_id="Upload_raw_data_from_gsc_to_BigQuery",
+    python_callable=upload_to_bigquery,
+    dag=dag
+)
+extract >> load_gsc >> load_bigquery
