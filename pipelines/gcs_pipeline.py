@@ -1,6 +1,5 @@
 from utils.constants import SERVICE_ACC_FILE, BUCKET_NAME, RAW_DATA_FILE_PATH, GSC_RAW_DATA_PATH, TABLE_ID, logger
 from etl.gcs_etl import initialize_gcs_client, upload_blob
-from etl.bigquery_etl import initialize_bigquery_client, from_gsc_to_bigquery_table
 
 def upload_to_gcs(**kwargs) -> str:
     """upload data to BigQuery
@@ -21,18 +20,3 @@ def upload_to_gcs(**kwargs) -> str:
         logger.error(f"Airflow GSC upload failed :{e}")
         raise
     
-
-def upload_to_bigquery(**kwargs):
-    try:
-        # Pull data_uri from Xcom
-        ti = kwargs['ti']
-        data_uri = ti.xcom_pull(task_ids='Upload_raw_data_to_GSC', key='data_uri')
-
-        # Initialze BigQuery client
-        bigquery_client = initialize_bigquery_client(SERVICE_ACC_FILE)
-        # Upload the data from Google Cloud Storage to BigQuery 
-        from_gsc_to_bigquery_table(bigquery_client, TABLE_ID, data_uri)
-        logger.info(f"File {GSC_RAW_DATA_PATH} successfully uploaded to {TABLE_ID} from airflow")
-    except Exception as e:
-        logger.error(f"Airflow GSC upload failed :{e}")
-        raise
