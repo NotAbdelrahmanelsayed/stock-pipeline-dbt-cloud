@@ -33,7 +33,7 @@ def upload_blob(
     bucket_name: str,
     source_file_name: str,
     destination_blob_name: str
-) -> None:
+) -> str:
     """
     Upload a file to a GCS bucket.
 
@@ -47,13 +47,20 @@ def upload_blob(
         Path to the file to upload.
     destination_blob_name : str
         Name for the blob in GCS.
+
+    Returns
+    -------
+    str
+        The GCS URI of the uploaded file.
+        Example: 'gs://stock-pipeline-dbt-cloud/raw/raw_test.csv'
     """
     try:
         bucket = client.bucket(bucket_name)
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_filename(source_file_name)
-        logger.info(f"Uploaded {source_file_name} to gs://{bucket_name}/{destination_blob_name}")
-    
+        data_uri = f"gs://{bucket_name}/{destination_blob_name}"
+        logger.info(f"Uploaded {source_file_name} to {data_uri}")
+        return data_uri
     except Exception as e:
         logger.error(f"Failed to upload blob: {e}")
         raise
