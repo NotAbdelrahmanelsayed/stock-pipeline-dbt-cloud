@@ -20,7 +20,7 @@ SERVICE_ACC_FILE = config.get("google_cloud", "SERVICE_ACCESS_FILE_PATH")
 
 # Google Bucket
 BUCKET_NAME = config.get("google_cloud", "BUCKET_NAME")
-GSC_RAW_DATA_PATH = config.get("data_pathes", "GSC_RAW_PATH")
+GSC_RAW_DATA_PATH = config.get("google_cloud", "GSC_RAW_PATH")
 
 # BigQuery
 PROJECT_ID = config.get("BigQuery", "PROJECT_ID")
