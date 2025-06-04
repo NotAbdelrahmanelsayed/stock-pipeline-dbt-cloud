@@ -2,7 +2,7 @@ from utils.constants import logger
 import yfinance as yf
 import pandas as pd 
 from typing import List, Optional
-
+from datetime import date
 
 
 def transform(df: pd.DataFrame) -> pd.DataFrame:
@@ -40,7 +40,6 @@ def transform(df: pd.DataFrame) -> pd.DataFrame:
 def download_stock_data(
     tickers: List[str], 
     start_date: Optional[str] = None, 
-    end_date: Optional[str] = None, 
     is_full_load: Optional[bool] = True) -> pd.DataFrame:
     """
     Download historical stock data using yfinance
@@ -65,10 +64,10 @@ def download_stock_data(
             logger.info(f"Downloading last 10 years data for {tickers}")
             df = yf.download(tickers=tickers, period='10y', group_by='ticker')
         else:
-            if not start_date or not end_date:
+            if not start_date:
                 raise ValueError("start_date and end_date must be provided if is_full_load is False.")
-            logger.info(f"Downloading data for {tickers} from {start_date} to {end_date}")
-            df = yf.download(tickers=tickers, start=start_date, end=end_date, group_by='ticker')
+            logger.info(f"Downloading data for {tickers} from {start_date} to {date.today()}")
+            df = yf.download(tickers=tickers, start=start_date, group_by='ticker')
         
         return df
     except Exception as e:
