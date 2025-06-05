@@ -6,7 +6,8 @@ def upload_to_gcs(**kwargs) -> str:
     """Upload local data to Google Cloud Storage."""
     try:
         ti = kwargs['ti']
-        file_path = ti.xcom_pull(task_ids='extract_stock_data_delta', key='file_name')
+        file_path = ti.xcom_pull(task_ids='extract_stock_data_delta', key='file_name') \
+                 or ti.xcom_pull(task_ids='extract_stock_data_full', key='file_name')
         blob_name = f"{GSC_RAW_DATA_PATH}/{Path(file_path).name}"
 
         # Initialize google cloud storage client
