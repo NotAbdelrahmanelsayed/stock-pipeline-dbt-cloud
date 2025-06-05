@@ -1,6 +1,8 @@
 from utils.logging_config import setup_logging
 from pathlib import Path
 import configparser
+import datetime
+
 
 # Prepare the logger
 logger = setup_logging()
@@ -38,3 +40,40 @@ TICKERS = config.get('y_finance','STOCK_TICKERS').split(', ')
 RAW_DATA_PATH = Path(config.get("data_pathes", "RAW_DIR_PATH")).resolve() # Full path
 RAW_DATA_FILE_NAME = config.get("data_pathes", "RAW_CSV_FILE")
 RAW_DATA_FILE_PATH = RAW_DATA_PATH / RAW_DATA_FILE_NAME
+
+def generate_filename(start_date: datetime.datetime | None = None) -> str:
+    """Return a standardized raw CSV filename.
+
+    Parameters
+    ----------
+    start_date : datetime.datetime | None
+        The first date in the filename. If ``None`` the start date is set
+        to ten years prior to today and the end date is set to today.
+
+    Returns
+    -------
+    str
+        Filename using the pattern ``RAW_DATA_FILE_NAMEYYYYMMDD_YYYYMMDD.csv``.
+    """
+
+    if start_date is None:
+        end_date = datetime.datetime.now()
+        start_date = end_date - datetime.timedelta(days=10 * 365)
+    else:
+        end_date = datetime.datetime.now()
+
+    start = start_date.strftime("%Y%m%d")
+    end = end_date.strftime("%Y%m%d")
+    return f"{RAW_DATA_FILE_NAME}{start}_{end}.csv"
+
+
+def get_local_file_path(start_date: datetime.datetime | None = None) -> str:
+    """Return the full local path for a raw CSV file."""
+
+    return str(RAW_DATA_PATH / generate_filename(start_date))
+
+
+def get_gcs_blob_path(start_date: datetime.datetime | None = None) -> str:
+    """Return the blob path used when uploading to GCS."""
+
+    return f"{GSC_RAW_DATA_PATH}/{generate_filename(start_date)}"
