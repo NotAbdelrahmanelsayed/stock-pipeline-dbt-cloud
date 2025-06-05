@@ -52,9 +52,15 @@ def from_gsc_to_bigquery_table(
 
         job_config = bigquery.LoadJobConfig(
             autodetect=True,
-            source_format=bigquery.SourceFormat.CSV
-        )
-
+            schema=[
+                bigquery.SchemaField("Date","DATE"),
+                bigquery.SchemaField("Ticker","STRING"),
+                bigquery.SchemaField("Open","FLOAT"),
+                bigquery.SchemaField("High","FLOAT"),
+                bigquery.SchemaField("Low","FLOAT"),
+                bigquery.SchemaField("Close","FLOAT"),
+                bigquery.SchemaField("Volume","FLOAT")]        
+                )
         load_job = client.load_table_from_uri(
             data_uri,
             table_id,
