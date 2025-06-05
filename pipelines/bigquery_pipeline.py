@@ -1,14 +1,15 @@
 from etl.bigquery_etl import initialize_bigquery_client, from_gsc_to_bigquery_table
 from utils.constants import SERVICE_ACC_FILE, GSC_RAW_DATA_PATH, TABLE_ID, logger
 
+# Create_data_set_if_not_exist: function
 
 def upload_to_bigquery(**kwargs):
     try:
         # Pull data_uri from Xcom
         ti = kwargs['ti']
-        data_uri = ti.xcom_pull(task_ids='Upload_raw_data_to_GSC', key='data_uri')
+        data_uri = ti.xcom_pull(task_ids='upload_to_gcs', key='data_uri')
 
-        # Initialze BigQuery client
+        # Initialize BigQuery client
         bigquery_client = initialize_bigquery_client(SERVICE_ACC_FILE)
         # Upload the data from Google Cloud Storage to BigQuery 
         from_gsc_to_bigquery_table(bigquery_client, TABLE_ID, data_uri)
