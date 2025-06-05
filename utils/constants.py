@@ -18,11 +18,11 @@ config.read(conf_path)
 
 
 # Google Credentials
-SERVICE_ACC_FILE = config.get("google_cloud", "SERVICE_ACCESS_FILE_PATH")
+SERVICE_ACCOUNT_FILE = config.get("google_cloud", "SERVICE_ACCESS_FILE_PATH")
 
 # Google Bucket
 BUCKET_NAME = config.get("google_cloud", "BUCKET_NAME")
-GSC_RAW_DATA_PATH = config.get("google_cloud", "GSC_RAW_PATH")
+GCS_RAW_DATA_PATH = config.get("google_cloud", "GSC_RAW_PATH")
 
 # BigQuery
 PROJECT_ID = config.get("BigQuery", "PROJECT_ID")
@@ -76,4 +76,4 @@ def get_local_file_path(start_date: datetime.datetime | None = None) -> str:
 def get_gcs_blob_path(start_date: datetime.datetime | None = None) -> str:
     """Return the blob path used when uploading to GCS."""
 
-    return f"{GSC_RAW_DATA_PATH}/{generate_filename(start_date)}"
+    return f"{GCS_RAW_DATA_PATH}/{generate_filename(start_date)}"

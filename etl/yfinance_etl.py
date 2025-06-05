@@ -5,7 +5,7 @@ from typing import List, Optional
 from datetime import date
 
 
-def transform(df: pd.DataFrame) -> pd.DataFrame:
+def transform_stock_data(df: pd.DataFrame) -> pd.DataFrame:
     """
     Flattens a MultiIndex DataFrame from yfinance into long-form format,
     drops duplicates, nulls, and malformed rows.
