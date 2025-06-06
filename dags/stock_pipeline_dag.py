@@ -3,12 +3,12 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 from airflow import DAG
-from airflow.providers.standard.operators.python import PythonOperator, BranchPythonOperator
+from airflow.providers.standard.operators.python import PythonOperator, BranchPythonOperator, ShortCircuitOperator
 from datetime import datetime
 from pipelines.yfinance_pipeline import download_full_stock_data, download_delta_stock_data
 from pipelines.gcs_pipeline import upload_to_gcs
 from pipelines.bigquery_pipeline import upload_to_bigquery, initialize_bigquery_client, SERVICE_ACCOUNT_FILE
-from utils.bigquery_helpers import get_last_loaded_date
+from utils.bigquery_helpers import get_last_loaded_date, check_data_quality
 from utils.constants import TABLE_ID
 from airflow.providers.standard.operators.empty import EmptyOperator
 from airflow.utils.trigger_rule import TriggerRule  
@@ -59,17 +59,26 @@ upload_to_bigquery_task = PythonOperator(
     dag=dag
 )
 
-merge_extracts = EmptyOperator(
-    task_id="merge_extract_path",
-    dag=dag,
-    trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS
-)
+# merge_extracts = EmptyOperator(
+#     task_id="merge_extract_path",
+#     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
+#     dag=dag
+# )
 
+check_staged_data = ShortCircuitOperator(
+    task_id="validate_staged_data",
+    ignore_downstream_trigger_rules=True,
+    python_callable=check_data_quality, 
+    trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
+    dag=dag,
+
+    
+)
 
 decide_load_type >> extract_all_stock_data
 decide_load_type >> delta_extract
 
-extract_all_stock_data >> merge_extracts 
-delta_extract >> merge_extracts 
+extract_all_stock_data >> check_staged_data 
+delta_extract >> check_staged_data 
 
-merge_extracts >> upload_to_gcs_task >> upload_to_bigquery_task
+check_staged_data >> upload_to_gcs_task >> upload_to_bigquery_task
