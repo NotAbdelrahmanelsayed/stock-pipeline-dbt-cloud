@@ -33,6 +33,20 @@ def transform_stock_data(df: pd.DataFrame) -> pd.DataFrame:
     # Final cleanup: ensure no partial rows survive
     df = df.dropna(subset=expected_cols.intersection(df.columns))
 
+    # Set correct data types
+    try:
+        df['Date'] = pd.to_datetime(df['Date'])
+        df['Ticker'] = df['Ticker'].astype(str)
+        df['Open'] = df['Open'].astype("float64")
+        df['High'] = df['High'].astype("float64")
+        df['Low'] = df['Low'].astype("float64")
+        df['Close'] = df['Close'].astype("float64")
+        df['Volume'] = df['Volume'].astype("Int64") # Using nullable Int64
+        logger.info("Data types set successfully.")
+    except Exception as e:
+        logger.error(f"Failed to set data types: {e}")
+        raise
+
     return df
 
 
