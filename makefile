@@ -56,16 +56,16 @@ airflow-user:
 ## ------------------------
 
 dbt-run:
-	docker exec -it dbt_core bash -c "cd /usr/app/online_retail && dbt run"
+	docker exec -it dbt_core bash -c "cd /usr/app/stock_modeling && dbt run"
 
 dbt-test:
-	docker exec -it dbt_core bash -c "cd /usr/app/online_retail && dbt test"
+	docker exec -it dbt_core bash -c "cd /usr/app/stock_modeling && dbt test"
 
 dbt-clean:
-	docker exec -it dbt_core bash -c "cd /usr/app/online_retail && dbt clean"
+	docker exec -it dbt_core bash -c "cd /usr/app/stock_modeling && dbt clean"
 
 dbt-docs:
-	docker exec -it dbt_core bash -c "cd /usr/app/online_retail && dbt docs generate && dbt docs serve"
+	docker exec -it dbt_core bash -c "cd /usr/app/stock_modeling && dbt docs generate && dbt docs serve --port 8081 --host 0.0.0.0"
 
 ## ------------------------
 ## Volume + Cache Inspection
