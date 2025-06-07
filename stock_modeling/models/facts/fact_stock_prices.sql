@@ -35,7 +35,7 @@ SELECT
         PARTITION BY ticker 
         ORDER BY trade_date 
         ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-        ) AS volume_rolling_sum_7d
+        ) AS volume_rolling_sum_7d,
     
     SUM(volume) OVER (
         PARTITION BY ticker 

@@ -35,6 +35,7 @@ decide_load_type = BranchPythonOperator(
         "table_id":TABLE_ID},
     dag=dag
 )
+
 extract_all_stock_data = PythonOperator(
     task_id="extract_stock_data_full",
     python_callable=download_full_stock_data,

@@ -32,7 +32,7 @@ def get_last_loaded_date(client: bigquery.Client, table_id, **kwargs) -> Union[s
         if max_date:
             logger.info(f"Last date from {table_id}: {max_date}\n")
             logger.info(f"Delta load activated....")
-            ti.xcom_push(key='max_date', value=max_date+ timedelta(days=1))
+            ti.xcom_push(key='max_date', value=max_date+timedelta(days=1))
         return "extract_stock_data_delta" 
     except Exception as e:
         logger.info(f"Table {table_id} Not found or empty")
