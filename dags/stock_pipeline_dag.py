@@ -59,12 +59,6 @@ upload_to_bigquery_task = PythonOperator(
     dag=dag
 )
 
-# merge_extracts = EmptyOperator(
-#     task_id="merge_extract_path",
-#     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
-#     dag=dag
-# )
-
 check_staged_data = ShortCircuitOperator(
     task_id="validate_staged_data",
     ignore_downstream_trigger_rules=True,
@@ -75,10 +69,7 @@ check_staged_data = ShortCircuitOperator(
     
 )
 
-decide_load_type >> extract_all_stock_data
-decide_load_type >> delta_extract
-
-extract_all_stock_data >> check_staged_data 
-delta_extract >> check_staged_data 
+decide_load_type >> extract_all_stock_data >> check_staged_data
+decide_load_type >> delta_extract >> check_staged_data
 
 check_staged_data >> upload_to_gcs_task >> upload_to_bigquery_task
