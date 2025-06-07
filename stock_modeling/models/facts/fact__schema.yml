@@ -1,32 +1,42 @@
-sources:
-  - name: stock_data
-    tables:
-      - name: raw_stock_prices
-
 models:
-  - name: stg_stock_analysis
+  - name: fact_stock_prices
     columns:
       - name: trade_date
         description: "The date when the stock trade was recorded"
-        tests: [not_null]
+      
       - name: ticker
         description: "The stock symbol, a unique identifier for a traded company"
-        tests: [not_null]
+      
       - name: open_price
         description: "The price at which the stock first traded on that `trade_date`"
-        tests: [not_null]
+      
       - name: high_price
         description: >
           The highest price the stock reached during the trading session on that `trade_date`
+      
       - name: low_price
         description: >
           The lowest price the stock reached during the trading session on that `trade_date`
-        tests: [not_null]
+      
       - name: close_price
         description: "The price at which the stock last traded on that `trade_date`"
-        tests: [not_null]
+      
       - name: volume
         description: >
           The total number of shares traded during the trading session 
           on that `trade_date`
-        tests: [not_null]
+      
+      - name: close_price_ma_7d
+        description: "7-day moving average of the close price per ticker"
+      
+      - name: close_price_ma_30d
+        description: "30-day moving average of the close price per ticker"
+      
+      - name: close_price_daily_diff
+        description: "Day-over-day differnece in close price per ticker"
+      
+      - name: volume_rolling_sum_7d
+        description: "7-day rolling sum of volume traded per ticker"
+      
+      - name: volume_rolling_sum_30d
+        description: "30-day rolling sum of volume traded per ticker"
