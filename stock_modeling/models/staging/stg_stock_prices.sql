@@ -11,5 +11,5 @@ FROM
     {{ source('stock_data', 'raw_stock_prices') }}
 WHERE
     Ticker IS NOT NULL
-
-limit 10
+ORDER BY 
+    trade_date
