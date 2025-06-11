@@ -30,8 +30,9 @@ def get_batch(file_path: str) -> Batch:
     batch_def = data_asset.add_batch_definition_whole_dataframe("raw_stock_stage")
     return batch_def.get_batch(batch_parameters={"dataframe": df})
 
+
 def get_expectation_suite() -> gx.ExpectationSuite:
-    """ Defines the expectations suite
+    """Defines the expectations suite
 
     Returns
     -------
@@ -42,40 +43,37 @@ def get_expectation_suite() -> gx.ExpectationSuite:
 
     suite.add_expectation(
         gx.expectations.ExpectTableColumnsToMatchSet(
-            column_set=EXPECTED_COLUMNS,
-            exact_match=True
+            column_set=EXPECTED_COLUMNS, exact_match=True
         )
     )
 
     suite.add_expectation(
         gx.expectations.ExpectTableRowCountToBeBetween(
-            min_value=len(TICKERS),
-            max_value=1_000_000_0
+            min_value=len(TICKERS), max_value=1_000_000_0
         )
     )
 
     for col in EXPECTED_COLUMNS:
-        suite.add_expectation(
-            gx.expectations.ExpectColumnValuesToNotBeNull(column=col)
-        )
-    
+        suite.add_expectation(gx.expectations.ExpectColumnValuesToNotBeNull(column=col))
+
     suite.add
     return suite
 
 
 def check_data_quality(**kwargs) -> bool:
     """Check the quality of the staged data file before uploading it to GCS or BigQuery."""
-    
-    ti = kwargs['ti']
-    file_path = ti.xcom_pull(task_ids='extract_stock_data_delta', key='file_name') \
-                 or ti.xcom_pull(task_ids='extract_stock_data_full', key='file_name')
-    
+
+    ti = kwargs["ti"]
+    file_path = ti.xcom_pull(
+        task_ids="extract_stock_data_delta", key="file_name"
+    ) or ti.xcom_pull(task_ids="extract_stock_data_full", key="file_name")
+
     # Get the data batch
     batch = get_batch(file_path)
-    
+
     # Get expectations suite
     suite = get_expectation_suite()
-    
+
     # Validate
     validation_result = batch.validate(suite)
 

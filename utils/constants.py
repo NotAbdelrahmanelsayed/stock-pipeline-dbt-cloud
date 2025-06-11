@@ -33,13 +33,14 @@ TABLE_ID = f"{PROJECT_ID}.{DATASET_NAME}.{TABLE_NAME}"
 
 
 # Tickers labels
-TICKERS = config.get('y_finance','STOCK_TICKERS').split(', ')
+TICKERS = config.get("y_finance", "STOCK_TICKERS").split(", ")
 
 
 # Data Dir handeling
-RAW_DATA_PATH = Path(config.get("data_pathes", "RAW_DIR_PATH")).resolve() # Full path
+RAW_DATA_PATH = Path(config.get("data_pathes", "RAW_DIR_PATH")).resolve()  # Full path
 RAW_DATA_FILE_NAME = config.get("data_pathes", "RAW_CSV_FILE")
 RAW_DATA_FILE_PATH = RAW_DATA_PATH / RAW_DATA_FILE_NAME
+
 
 def generate_filename(start_date: datetime.datetime | None = None) -> str:
     """Return a standardized raw CSV filename.

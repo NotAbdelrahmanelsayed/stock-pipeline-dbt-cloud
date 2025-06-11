@@ -19,7 +19,9 @@ def initialize_gcs_client(service_account_path: Path) -> storage.Client:
         GCS client instance.
     """
     try:
-        credentials = service_account.Credentials.from_service_account_file(service_account_path)
+        credentials = service_account.Credentials.from_service_account_file(
+            service_account_path
+        )
         client = storage.Client(credentials=credentials, project=credentials.project_id)
         logger.info("GSC Credentials Initialized successfully")
         return client
@@ -32,7 +34,7 @@ def upload_blob(
     client: storage.Client,
     bucket_name: str,
     source_file_name: str,
-    destination_blob_name: str
+    destination_blob_name: str,
 ) -> str:
     """
     Upload a file to a GCS bucket.
