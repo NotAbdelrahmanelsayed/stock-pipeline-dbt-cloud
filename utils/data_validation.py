@@ -17,15 +17,15 @@ def get_batch(file_path: str) -> Batch:
     # Create data context to manage configurations
     context = gx.get_context()
 
-    if "pandas_data_source" not in context.data_sources:
+    try:
+        data_source = context.data_sources.get("pandas_data_source")
+    except KeyError:
         data_source = context.data_sources.add_pandas("pandas_data_source")
-    else:
-        data_source = context.data_sources["pandas_data_source"]
 
-    if "raw_stock_data" not in data_source.assets:
+    try:
+        data_asset = data_source.get_asset("raw_stock_data")
+    except LookupError:
         data_asset = data_source.add_dataframe_asset(name="raw_stock_data")
-    else:
-        data_asset = data_source.assets["raw_stock_data"]
 
     batch_def = data_asset.add_batch_definition_whole_dataframe("raw_stock_stage")
     return batch_def.get_batch(batch_parameters={"dataframe": df})
@@ -56,7 +56,6 @@ def get_expectation_suite() -> gx.ExpectationSuite:
     for col in EXPECTED_COLUMNS:
         suite.add_expectation(gx.expectations.ExpectColumnValuesToNotBeNull(column=col))
 
-    suite.add
     return suite
 
 
