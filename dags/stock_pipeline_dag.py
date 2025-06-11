@@ -8,7 +8,8 @@ from datetime import datetime
 from pipelines.yfinance_pipeline import download_full_stock_data, download_delta_stock_data
 from pipelines.gcs_pipeline import upload_to_gcs
 from pipelines.bigquery_pipeline import upload_to_bigquery, initialize_bigquery_client, SERVICE_ACCOUNT_FILE
-from utils.bigquery_helpers import get_last_loaded_date, check_data_quality
+from utils.bigquery_helpers import get_last_loaded_date
+from utils.data_validation import check_data_quality
 from utils.constants import TABLE_ID
 from airflow.providers.standard.operators.empty import EmptyOperator
 from airflow.utils.trigger_rule import TriggerRule  

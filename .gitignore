@@ -207,3 +207,4 @@ config/configuration.conf
 logs/d*
 test_bigquery.py
 commits-cheat-sheet.md
+learn_gx.py
