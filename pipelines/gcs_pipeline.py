@@ -1,11 +1,12 @@
 from pathlib import Path
 from utils.constants import SERVICE_ACCOUNT_FILE, BUCKET_NAME, GCS_RAW_DATA_PATH, logger
-from etl.gcs_etl import initialize_gcs_client, upload_blob
+from etl.gcs_etl import initialize_gcs_client, upload_blob, create_bucket_if_not_exists
 
 
 def upload_to_gcs(**kwargs) -> str:
     """Upload local data to Google Cloud Storage."""
     try:
+        # Get the blob name
         ti = kwargs["ti"]
         file_path = ti.xcom_pull(
             task_ids="extract_stock_data_delta", key="file_name"
@@ -14,6 +15,10 @@ def upload_to_gcs(**kwargs) -> str:
 
         # Initialize google cloud storage client
         gcs_client = initialize_gcs_client(SERVICE_ACCOUNT_FILE)
+        
+        # Create GCS bucket if not exist
+        create_bucket_if_not_exists(gcs_client, BUCKET_NAME)
+        
         # Upload the data to google cloud storage
         data_uri = upload_blob(gcs_client, BUCKET_NAME, file_path, blob_name)
         logger.info(f"File {file_path} successfully uploaded to GSC from airflow")

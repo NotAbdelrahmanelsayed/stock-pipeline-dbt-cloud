@@ -1,3 +1,7 @@
+"""
+GCS client init, file upload, and bucket creation.
+"""
+
 from pathlib import Path
 from google.cloud import storage
 from google.oauth2 import service_account
@@ -66,3 +70,54 @@ def upload_blob(
     except Exception as e:
         logger.error(f"Failed to upload blob: {e}")
         raise
+
+
+def create_bucket_if_not_exists(
+    client: storage.Client,
+    bucket_name: str,
+    location: str = "US",
+    storage_class: str = "STANDARD",
+) -> bool:
+    """
+    Create a GCS bucket if it does not already exist.
+
+    Parameters
+    ----------
+    client : storage.Client
+        GCS client object.
+    bucket_name : str
+        Name of the GCS bucket.
+    location : str
+        GCS bucket location (default is 'US').
+    storage_class : str
+        Storage class for the bucket (default is 'STANDARD').
+
+    Returns
+    -------
+    bool
+        True if the bucket was created or already exists, False otherwise.
+    """
+
+    try:
+        bucket = client.lookup_bucket(bucket_name)
+        if bucket:
+            logger.info(f"Bucket `{bucket_name}` already exists.")
+            return True
+    except Exception as e:
+        logger.error(f"Error looking up bucket `{bucket_name}`: {e}")
+        raise
+
+    try:
+        bucket = client.bucket(bucket_name)
+        bucket.location = location
+        bucket.storage_class = storage_class
+        new_bucket = client.create_bucket(bucket)
+
+        logger.info(
+            f"Created bucket `{new_bucket.name}` in location `{new_bucket.location}` "
+            f"with storage class `{new_bucket.storage_class}`."
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Failed to create bucket `{bucket_name}`: {e}")
+        return False
