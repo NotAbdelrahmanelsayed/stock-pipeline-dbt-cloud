@@ -6,7 +6,6 @@ x-airflow-common:
     _PIP_ADDITIONAL_REQUIREMENTS: ""
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}:/opt/airflow # Project dir 
-    - /var/run/docker.sock:/var/run/docker.sock
 
   user: "${AIRFLOW_UID:-1000}:0"
   depends_on:
