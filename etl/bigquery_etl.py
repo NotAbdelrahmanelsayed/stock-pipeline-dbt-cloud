@@ -2,6 +2,7 @@ from pathlib import Path
 from google.oauth2 import service_account
 from utils.constants import logger
 from google.cloud import bigquery
+from google.api_core.exceptions import NotFound
 
 
 def initialize_bigquery_client(service_account_path: Path) -> bigquery.Client:
@@ -72,3 +73,43 @@ def from_gsc_to_bigquery_table(client: bigquery.Client, table_id: str, data_uri:
     except Exception as e:
         logger.error(f"Failed to load data from {data_uri} into {table_id}: {e}")
         raise
+
+
+def create_dataset_if_not_exists(
+    client: bigquery.Client,
+    dataset_id: str,
+    location: str = "US",
+) -> bool:
+    """
+    Create a BigQuery dataset if it does not already exist.
+
+    Parameters
+    ----------
+    client : bigquery.Client
+        BigQuery client instance.
+    dataset_id : str
+        The full ID of the dataset in the form 'project.dataset'.
+    location : str
+        Location for the dataset (default is 'US').
+
+    Returns
+    -------
+    bool
+        True if the dataset was created or already exists, False otherwise.
+    """
+    try:
+        client.get_dataset(dataset_id)
+        logger.info(f"Dataset `{dataset_id}` already exists.")
+        return True
+    except NotFound:
+        logger.info(f"Dataset `{dataset_id}` not found. Creating it.")
+
+    try:
+        dataset = bigquery.Dataset(dataset_id)
+        dataset.location = location
+        client.create_dataset(dataset, timeout=30)
+        logger.info(f"Created dataset `{dataset_id}` in location `{dataset.location}`.")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to create dataset `{dataset_id}`: {e}")
+        return False
