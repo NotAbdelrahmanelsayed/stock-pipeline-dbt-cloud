@@ -1,5 +1,5 @@
+from utils.cloud_clients import initialize_bigquery_client
 from etl.bigquery_etl import (
-    initialize_bigquery_client,
     from_gsc_to_bigquery_table,
     create_dataset_if_not_exists,
 )

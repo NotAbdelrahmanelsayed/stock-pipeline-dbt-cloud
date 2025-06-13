@@ -1,36 +1,6 @@
-from pathlib import Path
-from google.oauth2 import service_account
 from utils.constants import logger
 from google.cloud import bigquery
 from google.api_core.exceptions import NotFound
-
-
-def initialize_bigquery_client(service_account_path: Path) -> bigquery.Client:
-    """
-    Initialize a Google BigQuery client.
-
-    Parameters
-    ----------
-    service_account_path : Union[str, Path]
-        Path to the service account JSON file.
-
-    Returns
-    -------
-    google.cloud.bigquery.Client
-        BigQuery client instance.
-    """
-    try:
-        credentials = service_account.Credentials.from_service_account_file(
-            service_account_path
-        )
-        client = bigquery.Client(
-            credentials=credentials, project=credentials.project_id
-        )
-        logger.info("BigQuery Credentials Initialized successfully")
-        return client
-    except Exception as e:
-        logger.error(f"Couldn't create a BigQuery client: {e}")
-        raise
 
 
 def from_gsc_to_bigquery_table(client: bigquery.Client, table_id: str, data_uri: str):
