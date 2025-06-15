@@ -8,4 +8,9 @@ def setup_logging() -> logging.Logger:
         format=logging_format,
     )
     logger = logging.getLogger("stock_ETL")
+
+    # Suppress Great Expectations doc-decorator noise
+    gx_logger = logging.getLogger("great_expectations._docs_decorators")
+    gx_logger.setLevel(logging.WARNING)
+
     return logger
