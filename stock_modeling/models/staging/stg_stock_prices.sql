@@ -10,6 +10,7 @@ SELECT
 FROM 
     {{ source('stock_data', 'raw_stock_prices') }}
 WHERE
-    Ticker IS NOT NULL
+    Ticker IS NOT NULL 
+    AND Volume > 0 
 ORDER BY 
     trade_date
