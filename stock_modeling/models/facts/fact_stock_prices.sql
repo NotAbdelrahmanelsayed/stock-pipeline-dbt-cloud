@@ -1,4 +1,11 @@
-{{config(materialized='table')}}
+{{
+    config(
+        materialized='incremental',
+        unique_key=["session_id", "ticker"],
+        partition_by={ 'field': 'trade_date', 'data_type': 'date'},
+        incremental_strategy='insert_overwrite',
+    )
+}}
 
 WITH base AS (
     SELECT 
@@ -11,6 +18,7 @@ WITH base AS (
         volume
     FROM 
         {{ ref("stg_stock_prices") }}
+    
 )
 SELECT 
     *,
@@ -44,3 +52,14 @@ SELECT
         ) AS volume_rolling_sum_30d
 FROM 
     base
+
+{% if is_incremental() %}
+
+WHERE trade_date >= (
+    SELECT 
+        DATE_SUB(MAX(_dbt_max_partition), INTERVAL 1 MONTH)
+    FROM 
+        {{this}}
+)
+
+{% endif %}
