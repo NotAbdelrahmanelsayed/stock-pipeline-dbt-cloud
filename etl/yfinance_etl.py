@@ -1,8 +1,16 @@
+import os
 from utils.constants import logger
 import yfinance as yf
 import pandas as pd
 from typing import List, Optional
 from datetime import date
+
+# Ensure cache directory exists
+cache_dir = "/tmp/yfinance_cache"
+os.makedirs(cache_dir, exist_ok=True)
+
+# Set the cache location explicitly
+yf.set_tz_cache_location(cache_dir)
 
 
 def transform_stock_data(df: pd.DataFrame) -> pd.DataFrame:
