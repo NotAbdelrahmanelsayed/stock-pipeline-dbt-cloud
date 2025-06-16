@@ -41,6 +41,13 @@ RAW_DATA_PATH = Path(config.get("data_pathes", "RAW_DIR_PATH")).resolve()  # Ful
 RAW_DATA_FILE_NAME = config.get("data_pathes", "RAW_CSV_FILE")
 RAW_DATA_FILE_PATH = RAW_DATA_PATH / RAW_DATA_FILE_NAME
 
+# DBT Commands
+DBT_CONTAINER = config.get("dbt", "DBT_CONTAINER_NAME")
+DBT_PROJECT_PATH = config.get("dbt", "DBT_PROJECT_PATH")
+
+# Slack
+SLACK_WEBHOOK_URL = config.get("slack", "WEBHOOK_URL")
+
 
 def generate_filename(start_date: datetime.datetime | None = None) -> str:
     """Return a standardized raw CSV filename.

@@ -6,7 +6,6 @@ from airflow import DAG
 from airflow.providers.standard.operators.python import (
     PythonOperator,
     BranchPythonOperator,
-    ShortCircuitOperator,
 )
 from datetime import datetime
 from pipelines.yfinance_pipeline import (
@@ -21,13 +20,12 @@ from pipelines.bigquery_pipeline import (
 )
 from utils.bigquery_helpers import get_last_loaded_date
 from utils.data_validation import check_data_quality
-from utils.constants import TABLE_ID
+
+from utils.constants import TABLE_ID, DBT_CONTAINER, DBT_PROJECT_PATH
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.utils.trigger_rule import TriggerRule
+from dags.dag_utils import notify_faliure, send_slack_message
 
-
-DBT_CONTAINER = "dbt_core"
-DBT_PROJECT_PATH = "/usr/app/stock_modeling"
 
 default_args = {"owner": "Abdelrahman", "start_date": datetime(2025, 6, 1)}
 
@@ -66,10 +64,10 @@ upload_to_bigquery_task = PythonOperator(
     task_id="load_stock_data_to_bigquery", python_callable=upload_to_bigquery, dag=dag
 )
 
-check_staged_data = ShortCircuitOperator(
+check_staged_data = PythonOperator(
     task_id="check_staged_stock_data_quality",
-    ignore_downstream_trigger_rules=True,
     python_callable=check_data_quality,
+    on_failure_callback=notify_faliure,
     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
     dag=dag,
 )

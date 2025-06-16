@@ -77,8 +77,11 @@ def check_data_quality(**kwargs) -> bool:
     validation_result = batch.validate(suite)
 
     if not validation_result.success:
+
+        report = validation_result.describe()
         logger.warning(f"Validation failed:\n{validation_result.describe()}")
-        return False
+        ti.xcom_push(key="validation_report", value=report)
+        raise
 
     logger.info("Data validation passed successfully.")
     return True
