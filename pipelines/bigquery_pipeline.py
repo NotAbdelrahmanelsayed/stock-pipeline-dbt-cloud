@@ -12,10 +12,9 @@ from utils.constants import (
 )
 
 
-def upload_to_bigquery(**kwargs):
+def upload_to_bigquery(ti):
     try:
         # Pull data_uri from Xcom
-        ti = kwargs["ti"]
         data_uri = ti.xcom_pull(task_ids="upload_stock_data_to_gcs", key="data_uri")
 
         # Initialize BigQuery client

@@ -9,11 +9,10 @@ from etl.gcs_etl import upload_blob, create_bucket_if_not_exists
 from utils.cloud_clients import initialize_gcs_client
 
 
-def upload_to_gcs(**kwargs) -> str:
+def upload_to_gcs(ti) -> str:
     """Upload local data to Google Cloud Storage."""
     try:
         # Get the blob name
-        ti = kwargs["ti"]
         file_path = ti.xcom_pull(
             task_ids="extract_stock_data_delta", key="file_name"
         ) or ti.xcom_pull(task_ids="extract_stock_data_full", key="file_name")
