@@ -13,7 +13,7 @@ conf_path = Path(__file__).resolve().parents[1] / "config/configuration.conf"
 
 if not conf_path.exists():
     logger.error(f"Configuration path: {conf_path} doesn't exist")
-    raise
+    raise FileNotFoundError(f"Configuration path: {conf_path} doesn't exist")
 config.read(conf_path)
 
 
