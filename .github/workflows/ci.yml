@@ -7,15 +7,7 @@ on:
     branches: [ "main", "ci/cd" ]
 
 jobs:
-<<<<<<< HEAD
-<<<<<<< HEAD
-  build-and-test:
-=======
   build:
->>>>>>> 4e0e805 (refactor(ci.yml): Remove commented-out lint job from CI workflow)
-=======
-  build-and-test:
->>>>>>> 4bd19fd (ci(fix): build and tests in one job)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
