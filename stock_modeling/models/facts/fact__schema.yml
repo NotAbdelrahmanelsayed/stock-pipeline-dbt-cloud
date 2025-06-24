@@ -40,3 +40,25 @@ models:
       
       - name: volume_rolling_sum_30d
         description: "30-day rolling sum of volume traded per ticker"
+
+  - name: fact_stock_returns
+    columns:
+      - name: trade_date
+        description: "The date when the stock trade was recorded"
+
+      - name: ticker
+        description: "The stock symbol, a unique identifier for a traded company"
+
+      - name: close_price
+        description: "The price at which the stock last traded on that `trade_date`"
+
+      - name: daily_return
+        description: the percentage change in price from yesterday’s close to today’s close
+      
+      - name: rolling_return_7d
+        description: The percentage change in price over the last 7 days.
+      
+      - name: rolling_volatility_30d
+        description: >
+          How much a price jumps up and down, 
+          measured by the difference in price changes over the last 30 days.
