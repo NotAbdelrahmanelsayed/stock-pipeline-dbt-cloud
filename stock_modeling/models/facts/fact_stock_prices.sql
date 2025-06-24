@@ -1,7 +1,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key=["session_id", "ticker"],
+        unique_key=["trade_date", "ticker"],
         partition_by={ 'field': 'trade_date', 'data_type': 'date'},
         incremental_strategy='insert_overwrite',
     )
@@ -18,6 +18,8 @@ WITH base AS (
         volume
     FROM 
         {{ ref("stg_stock_prices") }}
+    ORDER BY 
+        trade_date
     
 )
 SELECT 
