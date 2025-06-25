@@ -11,6 +11,8 @@ WITH base AS (
         volume
     FROM 
         `stock-pipeline-dbt-cloud`.`stock_data`.`stg_stock_prices`
+    ORDER BY 
+        trade_date
     
 )
 SELECT 
