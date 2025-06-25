@@ -12,10 +12,10 @@ from utils.constants import (
 )
 
 
-def upload_to_bigquery(ti):
+def load_into_bigquery(ti):
     try:
         # Pull data_uri from Xcom
-        data_uri = ti.xcom_pull(task_ids="upload_stock_data_to_gcs", key="data_uri")
+        gcs_uri = ti.xcom_pull(task_ids="upload_stock_data_to_gcs", key="data_uri")
 
         # Initialize BigQuery client
         bigquery_client = initialize_bigquery_client(SERVICE_ACCOUNT_FILE)
@@ -23,7 +23,7 @@ def upload_to_bigquery(ti):
         # Create dataset if not exist
         create_dataset_if_not_exists(bigquery_client, DATASET_ID)
         # Upload the data from Google Cloud Storage to BigQuery
-        from_gsc_to_bigquery_table(bigquery_client, TABLE_ID, data_uri)
+        from_gsc_to_bigquery_table(bigquery_client, TABLE_ID, gcs_uri)
         logger.info(
             f"File {GCS_RAW_DATA_PATH} successfully uploaded to {TABLE_ID} from airflow"
         )

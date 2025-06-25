@@ -1,6 +1,6 @@
-from pipelines.yfinance_pipeline import (
-    download_full_stock_data,
-    download_delta_stock_data,
+from workflows.yfinance_workflow import (
+    extract_full_stock_prices,
+    extract_incremental_stock_prices,
 )
 from unittest.mock import patch, MagicMock, Mock
 from utils.constants import TICKERS
@@ -21,11 +21,11 @@ def setup_mocks(
     mock_save_data.return_value = True
 
 
-@patch("pipelines.yfinance_pipeline.save_data_locally")
-@patch("pipelines.yfinance_pipeline.get_local_file_path")
-@patch("pipelines.yfinance_pipeline.transform_stock_data")
-@patch("pipelines.yfinance_pipeline.download_stock_data")
-def test_download_full_stock_data(
+@patch("workflows.yfinance_workflow.save_data_locally")
+@patch("workflows.yfinance_workflow.get_local_file_path")
+@patch("workflows.yfinance_workflow.transform_stock_data")
+@patch("workflows.yfinance_workflow.download_stock_data")
+def test_extract_full_stock_prices(
     mock_download,
     mock_transform,
     mock_get_path,
@@ -50,7 +50,7 @@ def test_download_full_stock_data(
     )
 
     # Act
-    download_full_stock_data(mock_xcom)
+    extract_full_stock_prices(mock_xcom)
 
     # Assert
     mock_download.assert_called_once_with(TICKERS, is_full_load=True)
@@ -59,11 +59,11 @@ def test_download_full_stock_data(
     mock_save_data.assert_called_once_with(transformed_data, filepath)
 
 
-@patch("pipelines.yfinance_pipeline.save_data_locally")
-@patch("pipelines.yfinance_pipeline.get_local_file_path")
-@patch("pipelines.yfinance_pipeline.transform_stock_data")
-@patch("pipelines.yfinance_pipeline.download_stock_data")
-def test_download_delta_stock_data(
+@patch("workflows.yfinance_workflow.save_data_locally")
+@patch("workflows.yfinance_workflow.get_local_file_path")
+@patch("workflows.yfinance_workflow.transform_stock_data")
+@patch("workflows.yfinance_workflow.download_stock_data")
+def test_extract_incremental_stock_prices(
     mock_download,
     mock_transform,
     mock_get_path,
@@ -89,7 +89,7 @@ def test_download_delta_stock_data(
     )
 
     # Act
-    download_delta_stock_data(mock_xcom)
+    extract_incremental_stock_prices(mock_xcom)
 
     # Assert
     mock_download.assert_called_once_with(
