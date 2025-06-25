@@ -11,10 +11,36 @@ logger = setup_logging()
 config = configparser.ConfigParser()
 conf_path = Path(__file__).resolve().parents[1] / "config/configuration.conf"
 
-if not conf_path.exists():
-    logger.error(f"Configuration path: {conf_path} doesn't exist")
-    raise FileNotFoundError(f"Configuration path: {conf_path} doesn't exist")
-config.read(conf_path)
+if conf_path.exists():
+    config.read(conf_path)
+else:
+    logger.warning(
+        f"Configuration file not found at {conf_path}. Using default settings."
+    )
+    config.read_dict(
+        {
+            "google_cloud": {
+                "SERVICE_ACCESS_FILE_PATH": "service_account.json",
+                "BUCKET_NAME": "test-bucket",
+                "GSC_RAW_PATH": "raw",
+            },
+            "BigQuery": {
+                "PROJECT_ID": "test-project",
+                "DATASET_NAME": "test_dataset",
+                "TABLE_NAME": "test_table",
+            },
+            "y_finance": {"STOCK_TICKERS": "AAPL, MSFT, GOOGL"},
+            "data_pathes": {
+                "RAW_DIR_PATH": "/tmp/data",
+                "RAW_CSV_FILE": "stocks_",
+            },
+            "dbt": {
+                "DBT_CONTAINER_NAME": "dbt_core",
+                "DBT_PROJECT_PATH": "/usr/app/stock_modeling",
+            },
+            "slack": {"WEBHOOK_URL": ""},
+        }
+    )
 
 
 # Google Credentials

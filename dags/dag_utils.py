@@ -7,6 +7,6 @@ def send_slack_message(message, webhook_url):
     requests.post(webhook_url, json=payload)
 
 
-def notify_faliure(context):
+def notify_failure(context):
     report = context["task_instance"].xcom_pull(key="validation_report")
     send_slack_message(f"Data Validation failed\n{report}", SLACK_WEBHOOK_URL)
