@@ -8,13 +8,13 @@ from airflow.providers.standard.operators.python import (
     BranchPythonOperator,
 )
 from datetime import datetime
-from pipelines.yfinance_pipeline import (
-    download_full_stock_data,
-    download_delta_stock_data,
+from workflows.yfinance_workflow import (
+    extract_full_stock_prices,
+    extract_incremental_stock_prices,
 )
-from pipelines.gcs_pipeline import upload_to_gcs
-from pipelines.bigquery_pipeline import (
-    upload_to_bigquery,
+from workflows.gcs_workflow import stage_to_gcs
+from workflows.bigquery_workflow import (
+    load_into_bigquery,
     initialize_bigquery_client,
     SERVICE_ACCOUNT_FILE,
 )
@@ -24,7 +24,7 @@ from utils.data_validation import check_data_quality
 from utils.constants import TABLE_ID, DBT_CONTAINER, DBT_PROJECT_PATH
 from airflow.providers.standard.operators.bash import BashOperator
 from airflow.utils.trigger_rule import TriggerRule
-from dags.dag_utils import notify_faliure, send_slack_message
+from dags.dag_utils import notify_failure, send_slack_message
 
 
 default_args = {"owner": "Abdelrahman", "start_date": datetime(2025, 6, 1)}
@@ -47,27 +47,33 @@ decide_load_type = BranchPythonOperator(
 )
 
 extract_all_stock_data = PythonOperator(
-    task_id="extract_stock_data_full", python_callable=download_full_stock_data, dag=dag
+    task_id="extract_stock_data_full",
+    python_callable=extract_full_stock_prices,
+    dag=dag,
 )
 
 delta_extract = PythonOperator(
     task_id="extract_stock_data_delta",
-    python_callable=download_delta_stock_data,
+    python_callable=extract_incremental_stock_prices,
     dag=dag,
 )
 
-upload_to_gcs_task = PythonOperator(
-    task_id="upload_stock_data_to_gcs", python_callable=upload_to_gcs, dag=dag
+stage_to_gcs_task = PythonOperator(
+    task_id="upload_stock_data_to_gcs",
+    python_callable=stage_to_gcs,
+    dag=dag,
 )
 
-upload_to_bigquery_task = PythonOperator(
-    task_id="load_stock_data_to_bigquery", python_callable=upload_to_bigquery, dag=dag
+load_to_bigquery_task = PythonOperator(
+    task_id="load_stock_data_to_bigquery",
+    python_callable=load_into_bigquery,
+    dag=dag,
 )
 
 check_staged_data = PythonOperator(
     task_id="check_staged_stock_data_quality",
     python_callable=check_data_quality,
-    on_failure_callback=notify_faliure,
+    on_failure_callback=notify_failure,
     trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS,
     dag=dag,
 )
@@ -90,8 +96,8 @@ decide_load_type >> delta_extract >> check_staged_data
 
 (
     check_staged_data
-    >> upload_to_gcs_task
-    >> upload_to_bigquery_task
+    >> stage_to_gcs_task
+    >> load_to_bigquery_task
     >> dbt_run
     >> dbt_test
 )

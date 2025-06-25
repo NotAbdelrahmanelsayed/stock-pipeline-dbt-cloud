@@ -1,12 +1,12 @@
-from pipelines.bigquery_pipeline import upload_to_bigquery
+from workflows.bigquery_workflow import load_into_bigquery
 from unittest.mock import patch, MagicMock, Mock
 from utils.constants import DATASET_ID, TABLE_ID
 
 
-@patch("pipelines.bigquery_pipeline.create_dataset_if_not_exists")
-@patch("pipelines.bigquery_pipeline.from_gsc_to_bigquery_table")
-@patch("pipelines.bigquery_pipeline.initialize_bigquery_client")
-def test_upload_to_bigquery(
+@patch("workflows.bigquery_workflow.create_dataset_if_not_exists")
+@patch("workflows.bigquery_workflow.from_gsc_to_bigquery_table")
+@patch("workflows.bigquery_workflow.initialize_bigquery_client")
+def test_load_into_bigquery(
     mock_bq_connection, mock_from_gsc_to_bq, mock_create_dataset
 ):
     # Mock xcom pull
@@ -23,7 +23,7 @@ def test_upload_to_bigquery(
     # Mock load to bigquery from gcs
     mock_from_gsc_to_bq.return_value = True
 
-    upload_to_bigquery(mock_xcom)
+    load_into_bigquery(mock_xcom)
 
     assert mock_bq_connection.called, "initialize_bigquery_client() is not called"
     mock_create_dataset.assert_called_once_with(

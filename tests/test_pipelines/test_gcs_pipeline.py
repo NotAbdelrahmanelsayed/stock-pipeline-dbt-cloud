@@ -1,5 +1,5 @@
 from unittest.mock import patch, MagicMock, Mock
-from pipelines.gcs_pipeline import upload_to_gcs
+from workflows.gcs_workflow import stage_to_gcs
 from utils.constants import BUCKET_NAME, GCS_RAW_DATA_PATH
 import pytest
 from pathlib import Path
@@ -12,10 +12,10 @@ def blob_name():
     return blob_name
 
 
-@patch("pipelines.gcs_pipeline.upload_blob")
-@patch("pipelines.gcs_pipeline.create_bucket_if_not_exists")
-@patch("pipelines.gcs_pipeline.initialize_gcs_client")
-def test_upload_to_gcs(mock_client, mock_create_bucket, mock_upload_blob, blob_name):
+@patch("workflows.gcs_workflow.upload_blob")
+@patch("workflows.gcs_workflow.create_bucket_if_not_exists")
+@patch("workflows.gcs_workflow.initialize_gcs_client")
+def test_stage_to_gcs(mock_client, mock_create_bucket, mock_upload_blob, blob_name):
     # Mock xcom pull
     mock_xcom = MagicMock()
     mock_xcom.xcom_pull.return_value = "fake/path"
@@ -30,7 +30,7 @@ def test_upload_to_gcs(mock_client, mock_create_bucket, mock_upload_blob, blob_n
     # Mock upload data to GCS
     mock_upload_blob.return_value = "gs://stock-pipeline-dbt-cloud/raw/raw_test.csv"
 
-    upload_to_gcs(mock_xcom)
+    stage_to_gcs(mock_xcom)
 
     assert mock_client.called, "initialize_gcs_client() is not called"
     mock_create_bucket.assert_called_once_with(
